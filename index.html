@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Graphical Representaion of Exponential growth of population</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 0;
+        margin: 0;
+      }
+
+      h2{
+        margin: 10px;
+      }
+    
+    .middleContent {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        height: 80px;
+        font-size: medium;
+        margin: 14px;
+        box-shadow: 6px 6px 8px rgb(146, 146, 146);
+    }
+    
+      .middleContent h3{
+        padding: 0;
+        margin: 0;
+    }
+    
+    .middleContent input{
+        padding: 8px;
+        margin-top: 5px;
+        font-size: large;
+        border-radius: 8px;
+    }
+    
+    button{
+        padding: 8px 45px 8px 45px; 
+        background-color: rgb(216, 215, 215);
+        color: black;
+        font-size: large;
+        border-radius: 20px;
+        margin-bottom: 5px;
+    }
+    
+    canvas{
+        width: 800px;
+        margin: auto;
+        box-shadow: 8px 8px 15px black;
+      }
+    </style>
+
+  </head>
+  <body>
+
+    <h2>Logistic Growth Model: Population Over Time</h2>
+
+    <div class="middleContent">
+      <div>
+        <h3>Input Growth Rate</h3>
+        <input type="number" name="growthRate" id="growthRate" value="0.69" />
+      </div>
+      <div>
+        <h3>Input Initial Population</h3>
+        <input
+          type="number"
+          name="initialPopulation"
+          id="initialPopulation"
+          value="1000"
+        />
+      </div>
+      <div>
+        <h3>Input Time Step</h3>
+        <input type="number" name="timeStep" id="timeStep" value="1" />
+      </div>
+      <div>
+        <h3>Input Total Number to simulate</h3>
+        <input
+          type="number"
+          name="totalSimulate"
+          id="totalSimulate"
+          value="24"
+        />
+      </div>
+    </div>
+
+    <div>
+      <button onclick="exponentialGrowthFunction()">Enter</button>
+    </div>
+
+    <canvas id="growthChart"> </canvas>
+
+    <script>
+
+      let chartInstance = null;
+      function exponentialGrowthFunction() {
+        // Model parameters
+        const r = parseFloat(document.getElementById("growthRate").value); // Growth rate
+        let P = parseFloat(document.getElementById("initialPopulation").value); // Initial population
+        const dt = parseFloat(document.getElementById("timeStep").value); // Time step (1 hour)
+        const steps = parseFloat(
+          document.getElementById("totalSimulate").value
+        ); // Total hours to simulate
+
+        // Arrays to store time and population data
+        let timeData = [];
+        let populationData = [];
+
+        // Compute population over time using Euler's method
+        for (let i = 0; i < steps; i++) {
+          timeData.push(i * dt); //Pushing in array
+          populationData.push(P); //pushing in array
+          let dP = r * P; // Exponential growth equation
+          P += dP * dt; // Euler’s method update
+        }
+
+        if (chartInstance !== null) {
+          chartInstance.destroy();
+          chartInstance = null;
+        }
+
+        const ctx = document.getElementById("growthChart").getContext("2d");
+        chartInstance = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: timeData,
+            datasets: [
+              {
+                label: "Population over Time",
+                data: populationData,
+                borderColor: "blue",
+                fill: false,
+                tension: 0,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: {
+              x: { title: { display: true, text: "Time (t)" } },
+              y: { title: { display: true, text: "Population (P)" } },
+            },
+          },
+        });
+      }
+
+      window.onload = exponentialGrowthFunction;
+    </script>
+  </body>
+</html>
